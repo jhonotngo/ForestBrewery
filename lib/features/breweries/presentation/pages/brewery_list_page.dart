@@ -5,6 +5,7 @@ import 'package:forest_brewery_test/features/breweries/presentation/bloc/brewery
 import 'package:forest_brewery_test/features/breweries/presentation/bloc/brewery_list/brewery_list_event.dart';
 import 'package:forest_brewery_test/features/breweries/presentation/bloc/brewery_list/brewery_list_state.dart';
 import 'package:forest_brewery_test/features/breweries/presentation/widget/brewery_tile.dart';
+import 'package:go_router/go_router.dart';
 
 class BreweryListPage extends StatefulWidget {
   const BreweryListPage({super.key});
@@ -71,7 +72,15 @@ class _BreweryListPageState extends State<BreweryListPage> {
                   itemCount: state.breweries.length,
                   itemBuilder: (context, index) {
                     final brewery = state.breweries[index];
-                    return BreweryTile(brewery: brewery, onTap: () {});
+                    return BreweryTile(
+                      brewery: brewery,
+                      onTap: () {
+                        context.pushNamed(
+                          'breweryDetail',
+                          pathParameters: {'id': brewery.id},
+                        );
+                      },
+                    );
                   },
                 );
               }

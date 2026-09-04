@@ -4,6 +4,7 @@ import 'package:forest_brewery_test/features/breweries/data/datasources/brewery_
 import 'package:forest_brewery_test/features/breweries/data/repositories/brewery_repository_impl.dart';
 import 'package:forest_brewery_test/features/breweries/domain/repositories/brewery_repository.dart';
 import 'package:forest_brewery_test/features/breweries/domain/usecases/get_breweries_usecase.dart';
+import 'package:forest_brewery_test/features/breweries/domain/usecases/get_brewery_detail_usecase.dart';
 import 'package:forest_brewery_test/features/breweries/presentation/bloc/brewery_list/brewery_list_boc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -34,6 +35,10 @@ void setupServiceLocator() {
   // Use Cases
   getIt.registerSingleton<GetBreweriesUseCase>(
     GetBreweriesUseCase(repository: getIt<BreweryRepository>()),
+  );
+
+  getIt.registerSingleton<GetBreweryDetailUseCase>(
+    GetBreweryDetailUseCase(repository: getIt<BreweryRepository>()),
   );
 
   // BLOCs

@@ -5,4 +5,6 @@ abstract class BreweryRemoteDataSource {
     required int page,
     required int perPage,
   });
+
+  Future<BreweryDto> getBreweryDetail({required String id});
 }

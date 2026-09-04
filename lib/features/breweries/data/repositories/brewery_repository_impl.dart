@@ -18,4 +18,10 @@ class BreweryRepositoryImpl implements BreweryRepository {
     );
     return dtos.map((dto) => dto.toDomain()).toList();
   }
+
+  @override
+  Future<Brewery> getBreweryDetail({required String id}) async {
+    final dto = await remoteDataSource.getBreweryDetail(id: id);
+    return dto.toDomain();
+  }
 }

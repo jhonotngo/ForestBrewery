@@ -14,10 +14,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<BreweryListBloc>(create: (_) => getIt<BreweryListBloc>()),
-      ],
+    return BlocProvider<BreweryListBloc>(
+      create: (_) => getIt<BreweryListBloc>(),
       child: MaterialApp.router(
         title: 'Brewery App',
         theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),

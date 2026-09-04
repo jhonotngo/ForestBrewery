@@ -27,6 +27,23 @@ class BreweryRemoteDataSourceImpl implements BreweryRemoteDataSource {
     }
   }
 
+  @override
+  Future<BreweryDto> getBreweryDetail({required String id}) async {
+    try {
+      final response = await dio.get('/breweries/$id');
+
+      if (response.data is! Map<String, dynamic>) {
+        throw ParseException('Invalid response format');
+      }
+
+      return BreweryDto.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    } catch (e) {
+      throw UnexpectedException('Unexpected error: $e');
+    }
+  }
+
   List<BreweryDto> _parseBreweryList(dynamic data) {
     if (data is! List) {
       throw ParseException('Expected list of breweries');
