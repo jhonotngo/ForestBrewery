@@ -9,6 +9,13 @@ class BreweryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String subtitle =
+        'Brewery Type: ${brewery.breweryType ?? 'Unknown'} • City: ${brewery.city ?? 'N/A'}';
+
+    if (brewery.distance != null) {
+      subtitle += '\nDistance: ${brewery.distance!.toStringAsFixed(1)} km';
+    }
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
@@ -17,9 +24,7 @@ class BreweryTile extends StatelessWidget {
           brewery.name,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(
-          'Brewery Type: ${brewery.breweryType ?? 'Unknown'} • City: ${brewery.city ?? 'N/A'}',
-        ),
+        subtitle: Text(subtitle),
         trailing: const Icon(Icons.arrow_forward),
       ),
     );

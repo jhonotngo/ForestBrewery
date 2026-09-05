@@ -43,7 +43,21 @@ class _BreweryListPageState extends State<BreweryListPage> {
     return BlocProvider(
       create: (_) => getIt<BreweryListBloc>(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Breweries'), elevation: 0),
+        appBar: AppBar(
+          title: const Text('Breweries'),
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.location_on),
+              onPressed: () {
+                context.read<BreweryListBloc>().add(
+                  const BreweryListSortByDistance(),
+                );
+              },
+              tooltip: 'Sort by distance',
+            ),
+          ],
+        ),
         body: RefreshIndicator(
           onRefresh: () async {
             context.read<BreweryListBloc>().add(const BreweryListRefresh());

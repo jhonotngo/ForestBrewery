@@ -18,3 +18,7 @@ class BreweryListLoadMore extends BreweryListEvent {
 class BreweryListRefresh extends BreweryListEvent {
   const BreweryListRefresh();
 }
+
+class BreweryListSortByDistance extends BreweryListEvent {
+  const BreweryListSortByDistance();
+}
