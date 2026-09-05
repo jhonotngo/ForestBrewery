@@ -5,6 +5,7 @@ import 'package:forest_brewery_test/features/breweries/presentation/bloc/brewery
 import 'package:forest_brewery_test/features/breweries/presentation/bloc/brewery_list/brewery_list_event.dart';
 import 'package:forest_brewery_test/features/breweries/presentation/bloc/brewery_list/brewery_list_state.dart';
 import 'package:forest_brewery_test/features/breweries/presentation/widget/brewery_tile.dart';
+import 'package:forest_brewery_test/features/breweries/presentation/widget/search_bar_widger.dart';
 import 'package:go_router/go_router.dart';
 
 class BreweryListPage extends StatefulWidget {
@@ -58,50 +59,70 @@ class _BreweryListPageState extends State<BreweryListPage> {
             ),
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: () async {
-            context.read<BreweryListBloc>().add(const BreweryListRefresh());
-          },
-          child: BlocBuilder<BreweryListBloc, BreweryListState>(
-            builder: (context, state) {
-              if (state is BreweryListInitial) {
-                return const SizedBox.shrink();
-              }
-
-              if (state is BreweryListLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state is BreweryListError) {
-                return Center(child: Text('Error: ${state.message}'));
-              }
-
-              if (state is BreweryListEmpty) {
-                return const Center(child: Text('No breweries found'));
-              }
-
-              if (state is BreweryListSuccess) {
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: state.breweries.length,
-                  itemBuilder: (context, index) {
-                    final brewery = state.breweries[index];
-                    return BreweryTile(
-                      brewery: brewery,
-                      onTap: () {
-                        context.pushNamed(
-                          'breweryDetail',
-                          pathParameters: {'id': brewery.id},
-                        );
-                      },
-                    );
-                  },
+        body: Column(
+          children: [
+            SearchBarWidget(
+              onSearch: (query) {
+                context.read<BreweryListBloc>().add(
+                  BreweryListSearch(query: query),
                 );
-              }
+              },
+              onClear: () {
+                context.read<BreweryListBloc>().add(
+                  const BreweryListClearSearch(),
+                );
+              },
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  context.read<BreweryListBloc>().add(
+                    const BreweryListRefresh(),
+                  );
+                },
+                child: BlocBuilder<BreweryListBloc, BreweryListState>(
+                  builder: (context, state) {
+                    if (state is BreweryListInitial) {
+                      return const SizedBox.shrink();
+                    }
 
-              return const SizedBox.shrink();
-            },
-          ),
+                    if (state is BreweryListLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (state is BreweryListError) {
+                      return Center(child: Text('Error: ${state.message}'));
+                    }
+
+                    if (state is BreweryListEmpty) {
+                      return const Center(child: Text('No breweries found'));
+                    }
+
+                    if (state is BreweryListSuccess) {
+                      return ListView.builder(
+                        controller: _scrollController,
+                        itemCount: state.breweries.length,
+                        itemBuilder: (context, index) {
+                          final brewery = state.breweries[index];
+                          return BreweryTile(
+                            brewery: brewery,
+                            onTap: () {
+                              context.pushNamed(
+                                'breweryDetail',
+                                pathParameters: {'id': brewery.id},
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

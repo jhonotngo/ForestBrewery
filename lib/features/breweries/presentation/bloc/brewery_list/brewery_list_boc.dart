@@ -7,6 +7,7 @@ import 'package:forest_brewery_test/core/utils/constanst.dart';
 import 'package:forest_brewery_test/core/utils/haversine.dart';
 import 'package:forest_brewery_test/features/breweries/domain/entities/brewery.dart';
 import 'package:forest_brewery_test/features/breweries/domain/usecases/get_breweries_usecase.dart';
+import 'package:forest_brewery_test/features/breweries/domain/usecases/search_breweries_usecase.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'brewery_list_event.dart';
@@ -14,16 +15,21 @@ import 'brewery_list_state.dart';
 
 class BreweryListBloc extends Bloc<BreweryListEvent, BreweryListState> {
   final GetBreweriesUseCase getBreweriesUseCase;
+  final SearchBreweriesUseCase searchBreweriesUseCase;
   final GeolocatorService geolocatorService = GeolocatorService();
 
   Position? _userPosition;
 
-  BreweryListBloc({required this.getBreweriesUseCase})
-    : super(const BreweryListInitial()) {
+  BreweryListBloc({
+    required this.getBreweriesUseCase,
+    required this.searchBreweriesUseCase,
+  }) : super(const BreweryListInitial()) {
     on<BreweryListFetch>(_onFetch, transformer: droppable());
     on<BreweryListLoadMore>(_onLoadMore, transformer: droppable());
     on<BreweryListRefresh>(_onRefresh, transformer: droppable());
     on<BreweryListSortByDistance>(_onSortByDistance);
+    on<BreweryListSearch>(_onSearch);
+    on<BreweryListClearSearch>(_onClearSearch);
   }
 
   Future<List<Brewery>> _getBreweriesWithDistance(
@@ -183,5 +189,47 @@ class BreweryListBloc extends Bloc<BreweryListEvent, BreweryListState> {
     } catch (e) {
       emit(BreweryListError('Error sorting by distance: $e'));
     }
+  }
+
+  Future<void> _onSearch(
+    BreweryListSearch event,
+    Emitter<BreweryListState> emit,
+  ) async {
+    if (event.query.isEmpty) {
+      add(const BreweryListFetch());
+      return;
+    }
+
+    emit(const BreweryListLoading());
+    try {
+      final breweries = await searchBreweriesUseCase(
+        SearchBreweriesParams(query: event.query),
+      );
+
+      if (breweries.isEmpty) {
+        emit(const BreweryListEmpty());
+      } else {
+        final breweriesWithDistance = await _getBreweriesWithDistance(
+          breweries,
+        );
+
+        emit(
+          BreweryListSuccess(
+            breweries: breweriesWithDistance,
+            hasReachedMax: true,
+            currentPage: 1,
+          ),
+        );
+      }
+    } on AppException catch (e) {
+      emit(BreweryListError(e.message));
+    }
+  }
+
+  Future<void> _onClearSearch(
+    BreweryListClearSearch event,
+    Emitter<BreweryListState> emit,
+  ) async {
+    add(const BreweryListFetch());
   }
 }

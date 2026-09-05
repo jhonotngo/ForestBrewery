@@ -44,6 +44,22 @@ class BreweryRemoteDataSourceImpl implements BreweryRemoteDataSource {
     }
   }
 
+  @override
+  Future<List<BreweryDto>> searchBreweries({required String query}) async {
+    try {
+      final response = await dio.get(
+        '/breweries/search',
+        queryParameters: {'query': query},
+      );
+
+      return _parseBreweryList(response.data);
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    } catch (e) {
+      throw UnexpectedException('Unexpected error: $e');
+    }
+  }
+
   List<BreweryDto> _parseBreweryList(dynamic data) {
     if (data is! List) {
       throw ParseException('Expected list of breweries');

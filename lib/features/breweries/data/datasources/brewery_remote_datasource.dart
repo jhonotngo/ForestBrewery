@@ -7,4 +7,6 @@ abstract class BreweryRemoteDataSource {
   });
 
   Future<BreweryDto> getBreweryDetail({required String id});
+
+  Future<List<BreweryDto>> searchBreweries({required String query});
 }

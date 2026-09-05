@@ -5,6 +5,7 @@ import 'package:forest_brewery_test/features/breweries/data/repositories/brewery
 import 'package:forest_brewery_test/features/breweries/domain/repositories/brewery_repository.dart';
 import 'package:forest_brewery_test/features/breweries/domain/usecases/get_breweries_usecase.dart';
 import 'package:forest_brewery_test/features/breweries/domain/usecases/get_brewery_detail_usecase.dart';
+import 'package:forest_brewery_test/features/breweries/domain/usecases/search_breweries_usecase.dart';
 import 'package:forest_brewery_test/features/breweries/presentation/bloc/brewery_list/brewery_list_boc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -22,7 +23,7 @@ void setupServiceLocator() {
     ),
   );
 
-  // Datasource (Remote only)
+  // Datasource
   getIt.registerSingleton<BreweryRemoteDataSource>(
     BreweryRemoteDataSourceImpl(dio: getIt<Dio>()),
   );
@@ -37,12 +38,19 @@ void setupServiceLocator() {
     GetBreweriesUseCase(repository: getIt<BreweryRepository>()),
   );
 
+  getIt.registerSingleton<SearchBreweriesUseCase>(
+    SearchBreweriesUseCase(repository: getIt<BreweryRepository>()),
+  );
+
   getIt.registerSingleton<GetBreweryDetailUseCase>(
     GetBreweryDetailUseCase(repository: getIt<BreweryRepository>()),
   );
 
   // BLOCs
   getIt.registerSingleton<BreweryListBloc>(
-    BreweryListBloc(getBreweriesUseCase: getIt<GetBreweriesUseCase>()),
+    BreweryListBloc(
+      getBreweriesUseCase: getIt<GetBreweriesUseCase>(),
+      searchBreweriesUseCase: getIt<SearchBreweriesUseCase>(),
+    ),
   );
 }

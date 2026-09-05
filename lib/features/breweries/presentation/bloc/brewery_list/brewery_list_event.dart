@@ -22,3 +22,16 @@ class BreweryListRefresh extends BreweryListEvent {
 class BreweryListSortByDistance extends BreweryListEvent {
   const BreweryListSortByDistance();
 }
+
+class BreweryListSearch extends BreweryListEvent {
+  final String query;
+
+  const BreweryListSearch({required this.query});
+
+  @override
+  List<Object?> get props => [query];
+}
+
+class BreweryListClearSearch extends BreweryListEvent {
+  const BreweryListClearSearch();
+}
