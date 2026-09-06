@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:forest_brewery_test/core/utils/constanst.dart';
 import 'package:forest_brewery_test/features/breweries/data/datasources/brewery_remote_datasource.dart';
 import 'package:forest_brewery_test/features/breweries/data/datasources/brewery_remote_datasource_impl.dart';
 import 'package:forest_brewery_test/features/breweries/data/repositories/brewery_repository_impl.dart';
@@ -16,7 +17,7 @@ void setupServiceLocator() {
   getIt.registerSingleton<Dio>(
     Dio(
       BaseOptions(
-        baseUrl: 'https://api.openbrewerydb.org/v1',
+        baseUrl: AppConstants.apiBaseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
       ),

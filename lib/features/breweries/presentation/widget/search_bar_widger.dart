@@ -29,6 +29,13 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
     super.dispose();
   }
 
+  void _performSearch() {
+    if (_controller.text.isNotEmpty) {
+      widget.onSearch(_controller.text);
+      FocusScope.of(context).unfocus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -61,6 +68,9 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
               ),
               onChanged: (value) {
                 setState(() {});
+              },
+              onSubmitted: (value) {
+                _performSearch();
               },
             ),
           ),
