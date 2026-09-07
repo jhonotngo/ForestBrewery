@@ -240,8 +240,6 @@ lib/
 
 ## Notes
 
-## Notes
-
 ### Forest Tech Stack: What I Use & Why
 
 Here's how this project engages with Forest's internal stack:
