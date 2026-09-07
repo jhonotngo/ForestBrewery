@@ -240,6 +240,111 @@ lib/
 
 ## Notes
 
+## Notes
+
+### Forest Tech Stack: What I Use & Why
+
+Here's how this project engages with Forest's internal stack:
+
+#### ✅ We're Using (From Forest's Stack)
+
+**1. Flutter + flutter_bloc with bloc_concurrency** ✅
+```dart
+class BreweryListBloc extends Bloc<BreweryListEvent, BreweryListState> {
+  BreweryListBloc({...}) : super(const BreweryListInitial()) {
+    on<BreweryListFetch>(_onFetch, transformer: droppable());
+    on<BreweryListLoadMore>(_onLoadMore, transformer: droppable());
+    on<BreweryListRefresh>(_onRefresh, transformer: droppable());
+    on<BreweryListSortByDistance>(_onSortByDistance);
+    on<BreweryListSearch>(_onSearch);
+    on<BreweryListClearSearch>(_onClearSearch);
+  }
+}
+
+```
+
+**Why:** Clear separation of concerns, testable events/states.
+
+**2. Layered Architecture (Domain / Data / Presentation)** ✅
+
+**Why:** Scales from 1 feature to 50+. Clear dependency flow.
+
+**3. get_it** ✅ (but not injectable)
+```dart
+void setupServiceLocator() {
+  getIt.registerSingleton<Dio>(...);
+  getIt.registerSingleton<BreweryRemoteDataSource>(...);
+  getIt.registerSingleton<BreweryRepository>(...);
+  getIt.registerSingleton<GetBreweriesUseCase>(...);
+  getIt.registerSingleton<SearchBreweriesUseCase>(...);
+  getIt.registerSingleton<GetBreweryDetailUseCase>(...);
+  getIt.registerSingleton<BreweryListBloc>(...);
+}
+```
+**Why:** Manual registration is clearer for small projects.
+
+**Decision:** No 'injectable' code generation.
+- **Why:** Single service_locator.dart is more transparent and easier to debug
+- **Trade-off:** Manual work, but full control
+
+**4. dio** ✅
+```dart
+class BreweryRemoteDataSourceImpl implements BreweryRemoteDataSource {
+  final Dio dio;
+
+  Future<BreweryDto> getBreweryDetail({required String id}) async {
+    final response = await dio.get('/breweries/$id');
+    return BreweryDto.fromJson(response.data as Map<String, dynamic>);
+  }
+}
+```
+**Why:** Industry standard HTTP client with excellent interceptors and error handling.
+
+**5. Geolocator** ✅
+```dart
+class GeolocatorService {
+  Future<Position> getCurrentPosition() async {
+    final permission = await Geolocator.checkPermission();
+    return await Geolocator.getCurrentPosition(...);
+  }
+}
+```
+**Why:** Standard for location in Flutter with proper permission handling.
+
+**6. mocktail + bloc_test** ✅
+```dart
+blocTest<BreweryListBloc, BreweryListState>(
+  'emits [Loading, Success] when search succeeds',
+  build: () {
+    when(() => mockSearchUseCase(any(named: 'query')))
+        .thenAnswer((_) async => mockBreweries);
+    return breweryListBloc;
+  },
+  act: (bloc) => bloc.add(BreweryListSearch(query: 'Corona')),
+  expect: () => [
+    const BreweryListLoading(),
+    isA<BreweryListSuccess>(),
+  ],
+);
+```
+**Why:** Industry standard for testing BLoCs with excellent state transition verification.
+
+---
+
+#### ⚠️ We're NOT Using (From Forest's Stack) - And Why
+
+**1. injectable (Code Generation for DI)** ❌
+
+**Decision:** Use manual GetIt registration.
+
+**2. Mapbox** ❌
+
+**Decision:** Chose Distance feature instead of Map.
+
+**3. Sentry** ❌
+
+**Decision:** No error logging/crash needed.
+
 - **API:** Open Brewery DB (`https://api.openbrewerydb.org/v1`)
 - **No API Key Required:** Public API
 - **Test Approach:** Happy path + error scenarios, not edge cases
