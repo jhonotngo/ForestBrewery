@@ -12,7 +12,7 @@ A Flutter mobile app for exploring breweries from the Open Brewery DB API, built
 
 ### Quick Setup (Automated - Recommended) ✨
 
-We provide a setup script that handles everything automatically:
+I provide a setup script that handles everything automatically:
 
 ```bash
 # Clone the repository
@@ -244,4 +244,3 @@ lib/
 - **No API Key Required:** Public API
 - **Test Approach:** Happy path + error scenarios, not edge cases
 - **Null Safety:** Enabled; proper null handling throughout
-- **Linting:** Flutter recommended rules applied
